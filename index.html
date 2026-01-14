@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lineer Cebir - Profesyonel Çalışma Platformu</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* * ==========================================
+         * GENEL CSS AYARLARI (RESET & VARIABLES)
+         * ==========================================
+         */
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #f59e0b;
+            --bg-color: #f3f4f6;
+            --sidebar-bg: #1f2937;
+            --text-color: #1f2937;
+            --text-light: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --code-bg: #111827;
+            --code-text: #a5b4fc;
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --secondary-color: #60a5fa;
+            --bg-color: #111827;
+            --sidebar-bg: #000000;
+            --text-color: #e5e7eb;
+            --text-light: #9ca3af;
+            --card-bg: #1f2937;
+            --border-color: #374151;
+            --code-bg: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* * ==========================================
+         * SIDEBAR TASARIMI
+         * ==========================================
+         */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            transition: width var(--transition-speed);
+            overflow-y: auto;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            color: #fff;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 10px 0;
+            flex-grow: 1;
+        }
+
+        .nav-links li {
+            padding: 0;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: #d1d5db;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255,255,255,0.05);
+            color: #fff;
+            border-left-color: var(--accent-color);
+        }
+
+        .nav-links a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6b7280;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* * ==========================================
+         * ANA İÇERİK ALANI
+         * ==========================================
+         */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* HEADER */
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none; /* Mobile only usually */
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 8px 15px 8px 35px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            width: 300px;
+            transition: width 0.3s;
+        }
+
+        .search-input:focus {
+            width: 400px;
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(30deg);
+            color: var(--accent-color);
+        }
+
+        /* CONTENT SCROLL AREA */
+        .content-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 30px;
+            scroll-behavior: smooth;
+        }
+
+        .section-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: none; /* JS ile açılacak */
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* * ==========================================
+         * İÇERİK BİLEŞENLERİ (TYPOGRAPHY & CARDS)
+         * ==========================================
+         */
+        h1.page-title {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        h2.section-title {
+            font-size: 1.8rem;
+            color: var(--secondary-color);
+            margin-top: 40px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        h2.section-title i {
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+
+        h3.topic-title {
+            font-size: 1.3rem;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .definition-box {
+            background-color: rgba(37, 99, 235, 0.1);
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .definition-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .formula-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-bottom: 20px;
+            padding-left: 10px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        strong {
+            color: var(--secondary-color);
+        }
+
+        /* * ==========================================
+         * SORU - CEVAP BİLEŞENLERİ
+         * ==========================================
+         */
+        .example-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 30px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .example-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .example-badge {
+            background-color: var(--accent-color);
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .example-body {
+            padding: 20px;
+        }
+
+        .solution-toggle {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: 600;
+        }
+
+        .solution-toggle:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .solution-content {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success-color);
+            border-radius: 6px;
+            display: none; /* JS ile açılacak */
+        }
+        
+        .solution-content.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* * ==========================================
+         * RESPONSIVE
+         * ==========================================
+         */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                left: -280px;
+                height: 100%;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .toggle-btn {
+                display: block;
+            }
+
+            .search-input {
+                width: 150px;
+            }
+            
+            .search-input:focus {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-square-root-alt"></i> Lineer Cebir</h2>
+            <p>Final Çalışma Kılavuzu</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="active" onclick="showSection('sec1')"><i class="fas fa-th"></i> Matrisler & İşlemler</a></li>
+            <li><a href="#" onclick="showSection('sec2')"><i class="fas fa-calculator"></i> Determinantlar</a></li>
+            <li><a href="#" onclick="showSection('sec3')"><i class="fas fa-equals"></i> Denklem Sistemleri</a></li>
+            <li><a href="#" onclick="showSection('sec4')"><i class="fas fa-vector-square"></i> Vektör Uzayları</a></li>
+            <li><a href="#" onclick="showSection('sec5')"><i class="fas fa-exchange-alt"></i> Doğrusal Dönüşümler</a></li>
+            <li><a href="#" onclick="showSection('sec6')"><i class="fas fa-ruler-combined"></i> İç Çarpım & G-S</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <p>&copy; 2026 Eğitim Platformu</p>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <header>
+            <div class="header-left">
+                <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Konu veya kavram ara..." onkeyup="searchContent()">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Temayı Değiştir">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="content-scroll">
+            
+            <div id="sec1" class="section-container active">
+                <h1 class="page-title">1. Matrisler ve Temel İşlemler</h1>
+                <p>Matris çeşitleri ve temel özellikleri, daha karmaşık işlemlerin temelini oluşturur. Bu bölüm, lineer cebirin alfabesi niteliğindedir.</p>
+
+                <h2 class="section-title"><i class="fas fa-shapes"></i> Matris Çeşitleri</h2>
+                
+                <div class="definition-box">
+                    <span class="definition-title">Tanım</span>
+                    <strong>Kare Matris:</strong> Satır ve sütun sayısı eşit ($n \times n$) olan matrislerdir.
+                </div>
+                <div class="formula-box">
+                    $$ A_{2 \times 2} = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, \quad B_{3 \times 3} = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & k \end{bmatrix} $$
+                </div>
+
+                <div class="definition-box">
+                    <span class="definition-title">Tanım</span>
+                    <strong>Köşegen Matris:</strong> Köşegen dışındaki tüm elemanları sıfır olan kare matristir.
+                </div>
+                <div class="formula-box">
+                    $$ D = \begin{bmatrix} 5 & 0 & 0 \\ 0 & -2 & 0 \\ 0 & 0 & 3 \end{bmatrix} $$
+                </div>
+
+                <div class="definition-box">
+                    <span class="definition-title">Tanım</span>
+                    <strong>Birim Matris ($I$):</strong> Köşegen elemanları 1, diğerleri 0 olan matristir. Matris çarpımının etkisiz elemanıdır.
+                </div>
+                <div class="formula-box">
+                    $$ I_3 = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} $$
+                </div>
+
+                <div class="definition-box">
+                    <span class="definition-title">Tanım</span>
+                    <strong>Simetrik Matris:</strong> Transpozu kendisine eşit olan matristir ($A^T = A$).
+                </div>
+                <div class="formula-box">
+                    $$ S = \begin{bmatrix} 1 & 7 & 3 \\ 7 & 4 & -5 \\ 3 & -5 & 6 \end{bmatrix} \quad (\text{Dikkat ederseniz köşegene göre simetriktir}) $$
+                </div>
+
+                <div class="definition-box">
+                    <span class="definition-title">Tanım</span>
+                    <strong>Üst/Alt Üçgen Matris:</strong> Köşegenin altı veya üstü tamamen sıfır olan matrislerdir.
+                </div>
+
+                <h2 class="section-title"><i class="fas fa-sync-alt"></i> Transpoz Özellikleri</h2>
+                <ul>
+                    <li>$(A^T)^T = A$</li>
+                    <li>$(A+B)^T = A^T + B^T$</li>
+                    <li>$(A \cdot B)^T = B^T \cdot A^T$ <strong style="color:var(--danger-color);">(Sıra değişir! Çok Önemli)</strong></li>
+                </ul>
+
+                <h2 class="section-title"><i class="fas fa-calculator"></i> Matris İşlemleri</h2>
+                <ul>
+                    <li><strong>Toplama/Çıkarma:</strong> Boyutlar aynı olmalıdır. Eleman elemana işlem yapılır.</li>
+                    <li><strong>Çarpma ($A \cdot B$):</strong> Yapılabilmesi için A'nın sütun sayısının B'nin satır sayısına eşit olması gerekir.</li>
+                    <li>Matris çarpımında değişme özelliği yoktur ($A \cdot B \neq B \cdot A$).</li>
+                </ul>
+
+                <div class="example-card">
+                    <div class="example-header">
+                        <span>Örnek Soru 1: Matris Çarpımı</span>
+                        <span class="example-badge">Klasik</span>
+                    </div>
+                    <div class="example-body">
+                        <p>Aşağıdaki $A$ ve $B$ matrisleri için $A \cdot B$ çarpımını hesaplayınız.</p>
+                        $$ A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, \quad B = \begin{bmatrix} 2 & 0 \\ 1 & -1 \end{bmatrix} $$
+                        
+                        <button class="solution-toggle" onclick="toggleSolution('sol1')">Çözümü Göster</button>
+                        
+                        <div id="sol1" class="solution-content">
+                            <p>Matris çarpımında 1. matrisin satırı ile 2. matrisin sütunu çarpılır:</p>
+                            $$ A \cdot B = \begin{bmatrix} (1)(2) + (2)(1) & (1)(0) + (2)(-1) \\ (3)(2) + (4)(1) & (3)(0) + (4)(-1) \end{bmatrix} $$
+                            $$ A \cdot B = \begin{bmatrix} 2 + 2 & 0 - 2 \\ 6 + 4 & 0 - 4 \end{bmatrix} = \begin{bmatrix} 4 & -2 \\ 10 & -4 \end{bmatrix} $$
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-card">
+                    <div class="example-header">
+                        <span>Örnek Soru 2: Simetrik Matris Kontrolü</span>
+                        <span class="example-badge">Kavramsal</span>
+                    </div>
+                    <div class="example-body">
+                        <p>$A = \begin{bmatrix} 2 & x \\ 4 & 5 \end{bmatrix}$ matrisi simetrik ise $x$ kaçtır?</p>
+                        
+                        <button class="solution-toggle" onclick="toggleSolution('sol2')">Çözümü Göster</button>
+                        
+                        <div id="sol2" class="solution-content">
+                            <p>Simetrik matris tanımı gereği $A = A^T$ olmalıdır.</p>
+                            $$ A^T = \begin{bmatrix} 2 & 4 \\ x & 5 \end{bmatrix} $$
+                            <p>Eşitliğin sağlanması için $a_{12} = a_{21}$ olmalıdır. Yani $x = 4$.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec2" class="section-container">
+                <h1 class="page-title">2. Determinantlar</h1>
+                <p>Kare matrislerin karakteristik bir sayısını bulma işlemidir. Bir matrisin tersinin olup olmadığını veya denklem sistemlerinin çözüm durumunu belirler.</p>
+
+                <h2 class="section-title"><i class="fas fa-list-ol"></i> Hesaplama Yöntemleri</h2>
+                
+                <div class="definition-box">
+                    <span class="definition-title">Yöntem 1</span>
+                    <strong>Sarrus Kuralı:</strong> Sadece $3 \times 3$ matrisler için kullanılır. İlk iki satır veya sütun matrisin dışına tekrar yazılır, çapraz çarpımlar toplanır ve çıkarılır.
+                </div>
+
+                <div class="definition-box">
+                    <span class="definition-title">Yöntem 2</span>
+                    <strong>Kofaktör Açılımı:</strong> Herhangi bir satır veya sütun seçilerek yapılır.
+                    $$ det(A) = a_{11}K_{11} + a_{12}K_{12} + ... $$
+                </div>
+
+                <div class="definition-box">
+                    <span class="definition-title">Alt Tanımlar</span>
+                    <p><strong>Minör ($M_{ij}$):</strong> İlgili satır ve sütun kapatılınca kalan matrisin determinantıdır.</p>
+                    <p><strong>Kofaktör ($K_{ij}$):</strong> İşaretli minördür. Formülü: $$ K_{ij} = (-1)^{i+j} M_{ij} $$</p>
+                </div>
+
+                <h2 class="section-title"><i class="fas fa-star"></i> Önemli Özellikler</h2>
+                <div class="formula-box" style="text-align: left;">
+                    <ul>
+                        <li>Bir satır veya sütun tamamen sıfırsa determinant <strong>0</strong>'dır.</li>
+                        <li>İki satır/sütun aynıysa veya birbirinin katıysa determinant <strong>0</strong>'dır.</li>
+                        <li>İki satırın yeri değişirse determinant <strong>işaret değiştirir</strong>.</li>
+                        <li>$det(A) = det(A^T)$</li>
+                        <li>$det(A \cdot B) = det(A) \cdot det(B)$</li>
+                        <li>$det(A^{-1}) = \frac{1}{det(A)}$</li>
+                        <li>$n \times n$ boyutunda bir matris için $det(k \cdot A) = k^n \cdot det(A)$ (En çok karıştırılan özellik!)</li>
+                    </ul>
+                </div>
+
+                <div class="example-card">
+                    <div class="example-header">
+                        <span>Örnek Soru 3: Kofaktör ile Determinant</span>
+                        <span class="example-badge">İşlem</span>
+                    </div>
+                    <div class="example-body">
+                        <p>Aşağıdaki matrisin determinantını 1. satıra göre açarak hesaplayınız.</p>
+                        $$ A = \begin{bmatrix} 3 & 0 & 0 \\ 2 & 4 & 5 \\ 1 & 2 & 3 \end{bmatrix} $$
+                        
+                        <button class="solution-toggle" onclick="toggleSolution('sol3')">Çözümü Göster</button>
+                        
+                        <div id="sol3" class="solution-content">
+                            <p>1. Satıra göre açılım yapalım. 1. satırda bol sıfır olduğu için işlem kolaylaşacaktır.</p>
+                            $$ det(A) = 3 \cdot (-1)^{1+1} \cdot \begin{vmatrix} 4 & 5 \\ 2 & 3 \end{vmatrix} + 0 + 0 $$
+                            $$ det(A) = 3 \cdot (1) \cdot ((4)(3) - (5)(2)) $$
+                            $$ det(A) = 3 \cdot (12 - 10) = 3 \cdot 2 = 6 $$
+                            <p><strong>Not:</strong> Köşegen matrislerde veya üçgen matrislerde determinant sadece köşegen elemanların çarpımıdır. Bu örnek bir alt üçgen matris olmasa da, ilk satır yapısı işlemi çok basitleştirdi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec3" class="section-container">
+                <h1 class="page-title">3. Lineer Denklem Sistemleri ve Çözüm Yöntemleri</h1>
+                <p>$Ax=b$ şeklindeki sistemlerin çözümü mühendislik ve veri biliminin temelidir.</p>
+
+                <h2 class="section-title"><i class="fas fa-eraser"></i> A. Yok Etme Metotları</h2>
+                <p>Matrisi <strong>Eşelon Form</strong> veya <strong>İndirgenmiş Eşelon Forma</strong> getirerek çözüm yapılır.</p>
+                <ul>
+                    <li><strong>Eşelon Form:</strong> Pivotlar (satırın ilk sıfır olmayan elemanı) 1 olmalı ve merdiven basamağı şeklinde sıralanmalıdır. Alt taraftaki tüm elemanlar 0 olur.</li>
+                    <li><strong>Gauss Yok Etme:</strong> Matrisi eşelon forma getirip geriye doğru yerine koyarak çözme yöntemidir.</li>
+                    <li><strong>Gauss-Jordan:</strong> Matrisi indirgenmiş satır eşelon forma (pivotların üstü de 0 olacak şekilde) getirme yöntemidir. Sonuç doğrudan çıkar.</li>
+                </ul>
+
+                <h2 class="section-title"><i class="fas fa-project-diagram"></i> B. Cramer Yöntemi</h2>
+                <p>Sadece kare matrislerde ve determinant 0 değilse kullanılır. İşlem yükü fazladır ancak teorik önemi büyüktür.</p>
+                <div class="formula-box">
+                    $$ x_1 = \frac{|\Delta x_1|}{|A|}, \quad x_2 = \frac{|\Delta x_2|}{|A|}, \dots $$
+                </div>
+                <p>Burada $\Delta x_i$, A matrisinin i. sütununun sonuç vektörü $b$ ile değiştirilmesiyle elde edilen matristir.</p>
+
+                <h2 class="section-title"><i class="fas fa-undo"></i> C. Ters Matris Yöntemi</h2>
+                <p>Sistem $Ax=b$ ise ve $A^{-1}$ varsa, çözüm:</p>
+                <div class="formula-box">
+                    $$ X = A^{-1} \cdot b $$
+                </div>
+                <p><strong>Ters Matris Bulma Yöntemleri:</strong></p>
+                <ul>
+                    <li><strong>Ek Matris Yöntemi:</strong> $A^{-1} = \frac{Ek(A)}{det(A)}$ (Burada $Ek(A) = \text{Kofaktör Matrisi}^T$)</li>
+                    <li><strong>Elementer Satır İşlemleri:</strong> $[A : I]$ matrisine işlem yaparak $[I : A^{-1}]$ elde edilir.</li>
+                </ul>
+
+                <h2 class="section-title"><i class="fas fa-question-circle"></i> D. Çözüm Durumları</h2>
+                <p>Artırılmış matris $[A:b]$ incelendiğinde:</p>
+                <ul>
+                    <li><strong>Tek Çözüm:</strong> Değişken sayısı kadar pivot varsa.</li>
+                    <li><strong>Sonsuz Çözüm:</strong> $0=0$ satırı oluşuyorsa ve serbest değişken varsa.</li>
+                    <li><strong>Çözüm Yok (Tutarsız):</strong> $0 = \text{Sayı}$ (örneğin $0=4$) şeklinde bir satır oluşuyorsa.</li>
+                </ul>
+
+                <div class="example-card">
+                    <div class="example-header">
+                        <span>Örnek Soru 4: Cramer Yöntemi</span>
+                        <span class="example-badge">Uygulama</span>
+                    </div>
+                    <div class="example-body">
+                        <p>Aşağıdaki denklem sistemini Cramer yöntemi ile çözünüz:</p>
+                        $$ \begin{cases} 2x + y = 5 \\ x - y = 1 \end{cases} $$
+                        
+                        <button class="solution-toggle" onclick="toggleSolution('sol4')">Çözümü Göster</button>
+                        
+                        <div id="sol4" class="solution-content">
+                            <p><strong>Adım 1:</strong> Katsayılar matrisinin determinantını ($|A|$) bul.</p>
+                            $$ |A| = \begin{vmatrix} 2 & 1 \\ 1 & -1 \end{vmatrix} = (2)(-1) - (1)(1) = -3 $$
+                            
+                            <p><strong>Adım 2:</strong> $\Delta x$ determinantını bul (1. sütunu sonuçlar ile değiştir).</p>
+                            $$ |\Delta x| = \begin{vmatrix} 5 & 1 \\ 1 & -1 \end{vmatrix} = (5)(-1) - (1)(1) = -6 $$
+
+                            <p><strong>Adım 3:</strong> $\Delta y$ determinantını bul (2. sütunu sonuçlar ile değiştir).</p>
+                            $$ |\Delta y| = \begin{vmatrix} 2 & 5 \\ 1 & 1 \end{vmatrix} = (2)(1) - (5)(1) = -3 $$
+
+                            <p><strong>Adım 4:</strong> Sonuçları hesapla.</p>
+                            $$ x = \frac{|\Delta x|}{|A|} = \frac{-6}{-3} = 2, \quad y = \frac{|\Delta y|}{|A|} = \frac{-3}{-3} = 1 $$
+                            <p>Çözüm Kümesi: $\{2, 1\}$</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec4" class="section-container">
+                <h1 class="page-title">4. Vektör Uzayları (Vector Spaces)</h1>
+                <p>Soyut cebirin en önemli konusudur. Uzay kavramı, sadece fiziksel uzay değil, matematiksel nesnelerin (fonksiyonlar, matrisler vb.) oluşturduğu kümelerdir.</p>
+
+                <h2 class="section-title"><i class="fas fa-cube"></i> Tanım ve Alt Uzay</h2>
+                <div class="definition-box">
+                    <span class="definition-title">Tanım</span>
+                    Toplama ve skalerle çarpma işlemleri altında kapalı olan ve 10 aksiyomu sağlayan kümelerdir.
+                </div>
+                
+                <h3>Alt Uzay (Subspace)</h3>
+                <p>Bir $W$ kümesinin alt uzay olması için şu şartları sağlaması gerekir:</p>
+                <ol>
+                    <li>Toplama altında kapalı olmalı ($w_1+w_2 \in W$)</li>
+                    <li>Skaler çarpım altında kapalı olmalı ($c \cdot w_1 \in W$)</li>
+                    <li>(Pratik Kural) Küme içinde sıfır vektörü $\vec{0}$ bulunmalıdır.</li>
+                </ol>
+                <div class="definition-box" style="background-color: rgba(245, 158, 11, 0.1); border-left-color: var(--accent-color);">
+                    <i class="fas fa-lightbulb"></i> <strong>İpucu:</strong> Genellikle orijinden geçen doğrular/düzlemler alt uzaydır, ancak sabit sayı eklenmiş ($x+2y=2$) kümeler alt uzay değildir çünkü orijinden geçmezler.
+                </div>
+
+                <h2 class="section-title"><i class="fas fa-network-wired"></i> Lineer Bağımsızlık</h2>
+                <p>$c_1v_1 + c_2v_2 + ... + c_nv_n = 0$ denklemi sadece $c_1=c_2=...=0$ olduğunda sağlanıyorsa vektörler lineer bağımsızdır.</p>
+                <p><strong>Pratik Yöntem:</strong> Vektörleri matrisin sütunları (veya satırları) gibi yazıp determinantına bakılabilir. $det \neq 0$ ise lineer bağımsızdır.</p>
+
+                <h2 class="section-title"><i class="fas fa-expand-arrows-alt"></i> Germe (Span) ve Taban (Baz)</h2>
+                <ul>
+                    <li><strong>Germe (Span):</strong> Bir vektör kümesinin lineer kombinasyonlarıyla uzaydaki tüm vektörlerin elde edilebilmesidir.</li>
+                    <li><strong>Taban (Baz):</strong> Bir küme hem <strong>lineer bağımsız</strong> hem de uzayı <strong>geriyorsa</strong> o küme bir bazdır.</li>
+                    <li><strong>Standart Bazlar:</strong> 
+                        $$ R^2 \text{ için } \{(1,0), (0,1)\} $$ 
+                        $$ R^3 \text{ için } \{(1,0,0), (0,1,0), (0,0,1)\} $$
+                    </li>
+                </ul>
+
+                <div class="example-card">
+                    <div class="example-header">
+                        <span>Örnek Soru 5: Alt Uzay Kontrolü</span>
+                        <span class="example-badge">Teorik</span>
+                    </div>
+                    <div class="example-body">
+                        <p>$W = \{(x, y) \in R^2 \mid y = 3x + 1\}$ kümesi $R^2$'nin bir alt uzayı mıdır?</p>
+                        
+                        <button class="solution-toggle" onclick="toggleSolution('sol5')">Çözümü Göster</button>
+                        
+                        <div id="sol5" class="solution-content">
+                            <p>Alt uzay olması için sıfır vektörünü $(0,0)$ içermelidir.</p>
+                            <p>Denklemde $x=0$ ve $y=0$ koyalım:</p>
+                            $$ 0 = 3(0) + 1 \Rightarrow 0 = 1 \quad (\text{Yanlış}) $$
+                            <p>Sıfır vektörünü içermediği için (Orijinden geçmediği için) <strong>alt uzay değildir.</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec5" class="section-container">
+                <h1 class="page-title">5. Doğrusal Dönüşümler</h1>
+                <p>Bir uzaydan diğerine fonksiyonel eşleşmedir ($T: V \rightarrow W$). Matrislerle yakından ilişkilidir; her doğrusal dönüşüm bir matris ile temsil edilebilir.</p>
+
+                <h2 class="section-title"><i class="fas fa-check-double"></i> Doğrusallık Şartları</h2>
+                <p>Bir $T$ dönüşümünün doğrusal olması için iki şartı sağlaması gerekir:</p>
+                <div class="formula-box">
+                    $$ 1. \quad T(\vec{u} + \vec{v}) = T(\vec{u}) + T(\vec{v}) $$
+                    $$ 2. \quad T(c \cdot \vec{u}) = c \cdot T(\vec{u}) $$
+                </div>
+
+                <h2 class="section-title"><i class="fas fa-bullseye"></i> Çekirdek (Kernel)</h2>
+                <p>Dönüşüm sonucunu 0 yapan vektörlerin kümesidir.</p>
+                <div class="formula-box">
+                    $$ Ker(T) = \{ \vec{u} \in V \mid T(\vec{u}) = \vec{0} \} $$
+                </div>
+
+                <div class="example-card">
+                    <div class="example-header">
+                        <span>Örnek Soru 6: Çekirdek Bulma</span>
+                        <span class="example-badge">Hesaplama</span>
+                    </div>
+                    <div class="example-body">
+                        <p>$T: R^2 \rightarrow R^2$ dönüşümü $T(x, y) = (x - y, 0)$ olarak tanımlanmıştır. $Ker(T)$ nedir?</p>
+                        
+                        <button class="solution-toggle" onclick="toggleSolution('sol6')">Çözümü Göster</button>
+                        
+                        <div id="sol6" class="solution-content">
+                            <p>Çekirdek tanımı gereği sonucu sıfır vektörüne eşitlemeliyiz:</p>
+                            $$ T(x, y) = (0, 0) $$
+                            $$ (x - y, 0) = (0, 0) $$
+                            <p>Buradan şu denklem çıkar:</p>
+                            $$ x - y = 0 \Rightarrow x = y $$
+                            <p>İkinci bileşen zaten her zaman 0. O halde çekirdek kümesi:</p>
+                            $$ Ker(T) = \{ (a, a) \mid a \in R \} $$
+                            <p>Yani $y=x$ doğrusu üzerindeki tüm vektörler çekirdeği oluşturur.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec6" class="section-container">
+                <h1 class="page-title">6. İç Çarpım ve Ortogonallik (Gram-Schmidt)</h1>
+                <p>Vektörlerin uzunluğunu, açısını ve dikliğini ölçmemize yarayan yapıdır. Özellikle veri sıkıştırma ve en küçük kareler yönteminde kullanılır.</p>
+
+                <h2 class="section-title"><i class="fas fa-drafting-compass"></i> Ortogonallik ve Ortonormallik</h2>
+                <ul>
+                    <li><strong>Ortogonallik (Diklik):</strong> İki vektörün iç çarpımı sıfırsa ($\langle u, v \rangle = 0$) bu vektörler birbirine diktir.</li>
+                    <li><strong>Ortonormal Küme:</strong> Vektörler hem birbirine dik (ortogonal) hem de uzunlukları (normları) 1 birim ise ortonormaldir.</li>
+                    <li><strong>Birim vektör formülü:</strong> $$ \vec{u} = \frac{\vec{v}}{||\vec{v}||} $$</li>
+                </ul>
+
+                <h2 class="section-title"><i class="fas fa-step-forward"></i> Gram-Schmidt Metodu</h2>
+                <p>Lineer bağımsız bir kümeyi ortogonal (dik) bir baza dönüştürme işlemidir. Süreç adım adım işler.</p>
+                
+                <div class="formula-box" style="text-align: left;">
+                    <p><strong>Adım 1:</strong> İlk vektörü olduğu gibi al.</p>
+                    $$ \vec{u}_1 = \vec{v}_1 $$
+                    
+                    <p><strong>Adım 2:</strong> İkinci vektörden, birinci vektör üzerindeki izdüşümü çıkar.</p>
+                    $$ \vec{u}_2 = \vec{v}_2 - \frac{\langle \vec{v}_2, \vec{u}_1 \rangle}{\langle \vec{u}_1, \vec{u}_1 \rangle} \cdot \vec{u}_1 $$
+                    
+                    <p><strong>Adım 3:</strong> Üçüncü vektörden, önceki iki vektör üzerindeki izdüşümleri çıkar.</p>
+                    $$ \vec{u}_3 = \vec{v}_3 - \frac{\langle \vec{v}_3, \vec{u}_1 \rangle}{\langle \vec{u}_1, \vec{u}_1 \rangle} \cdot \vec{u}_1 - \frac{\langle \vec{v}_3, \vec{u}_2 \rangle}{\langle \vec{u}_2, \vec{u}_2 \rangle} \cdot \vec{u}_2 $$
+                </div>
+                <div class="definition-box">
+                    <span class="definition-title">Sonuç</span>
+                    Elde edilen $\{u_1, u_2, ...\}$ kümesi ortogonaldir. Eğer ortonormal isteniyorsa, en sonunda her vektör kendi uzunluğuna bölünerek normalize edilir.
+                </div>
+
+                <div class="example-card">
+                    <div class="example-header">
+                        <span>Örnek Soru 7: Gram-Schmidt Uygulaması</span>
+                        <span class="example-badge">Zor</span>
+                    </div>
+                    <div class="example-body">
+                        <p>$R^2$ uzayında verilen $v_1 = (1, 1)$ ve $v_2 = (0, 2)$ vektörlerini Gram-Schmidt yöntemi ile ortogonal hale getiriniz.</p>
+                        
+                        <button class="solution-toggle" onclick="toggleSolution('sol7')">Çözümü Göster</button>
+                        
+                        <div id="sol7" class="solution-content">
+                            <p><strong>Adım 1:</strong> İlk vektörü seç.</p>
+                            $$ u_1 = v_1 = (1, 1) $$
+                            
+                            <p><strong>Adım 2:</strong> İkinci vektörü formüle uygula.</p>
+                            <p>Önce iç çarpımları hesaplayalım:</p>
+                            $$ \langle v_2, u_1 \rangle = (0)(1) + (2)(1) = 2 $$
+                            $$ \langle u_1, u_1 \rangle = (1)(1) + (1)(1) = 2 $$
+                            
+                            <p>Şimdi formüle koyalım:</p>
+                            $$ u_2 = v_2 - \frac{2}{2} \cdot u_1 $$
+                            $$ u_2 = (0, 2) - 1 \cdot (1, 1) = (0-1, 2-1) = (-1, 1) $$
+                            
+                            <p><strong>Kontrol:</strong> $u_1$ ve $u_2$ dik mi?</p>
+                            $$ \langle u_1, u_2 \rangle = (1)(-1) + (1)(1) = 0 \quad (\text{Evet, Dik!}) $$
+                            
+                            <p><strong>Sonuç:</strong> Ortogonal küme $\{(1, 1), (-1, 1)\}$</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height: 100px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sayfa Yüklendiğinde
+        document.addEventListener('DOMContentLoaded', () => {
+            // İlk bölümü göster
+            // showSection('sec1'); // HTML içinde 'active' class ile zaten açık
+        });
+
+        // Bölüm Değiştirme Fonksiyonu
+        function showSection(sectionId) {
+            // Tüm bölümleri gizle
+            const sections = document.querySelectorAll('.section-container');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // İstenen bölümü göster
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Sidebar link aktifliğini güncelle
+            const links = document.querySelectorAll('.nav-links a');
+            links.forEach(link => link.classList.remove('active'));
+            
+            // Tıklanan linki bul (basit mantık)
+            links.forEach(link => {
+                if(link.getAttribute('onclick').includes(sectionId)) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Mobilde sidebarı kapat
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        // Çözüm Göster/Gizle
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            const btn = el.previousElementSibling; // Button
+            
+            if (el.classList.contains('show')) {
+                el.classList.remove('show');
+                btn.textContent = "Çözümü Göster";
+            } else {
+                el.classList.add('show');
+                btn.textContent = "Çözümü Gizle";
+            }
+        }
+
+        // Sidebar Toggle (Mobil)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Tema Değiştirme (Dark/Light)
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const icon = document.querySelector('.theme-toggle i');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                icon.className = 'fas fa-moon';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-sun';
+            }
+        }
+
+        // Arama Fonksiyonu
+        function searchContent() {
+            const input = document.querySelector('.search-input');
+            const filter = input.value.toLowerCase();
+            const activeSection = document.querySelector('.section-container.active');
+            
+            // Eğer arama boşsa normal akışa devam et
+            if (filter === "") {
+                // Highlightları temizle (Gelişmiş versiyonda yapılabilir)
+                return;
+            }
+
+            // Basit arama: Tüm metin içinde ara ve o bölüme git
+            // Not: Bu basit bir demo arama özelliğidir.
+            // Profesyonel uygulamada tüm sectionları tarayıp indexlemek gerekir.
+            
+            const allSections = document.querySelectorAll('.section-container');
+            let found = false;
+
+            allSections.forEach(section => {
+                if (section.textContent.toLowerCase().includes(filter)) {
+                    if (!found) { // İlk bulunan sonucu göster
+                        sections = document.querySelectorAll('.section-container');
+                        sections.forEach(s => s.classList.remove('active'));
+                        section.classList.add('active');
+                        found = true;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
