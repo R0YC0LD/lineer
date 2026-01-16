@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lineer Cebir Final Çalışma Özeti</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            border-left: 5px solid #2980b9;
+            padding-left: 10px;
+            margin-top: 30px;
+            background-color: #e8f4fc;
+            padding: 10px;
+            border-radius: 0 5px 5px 0;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        strong {
+            color: #c0392b;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎓 Lineer Cebir Final Çalışma Özeti</h1>
+    <p>Bu özet, matris işlemlerinden başlayıp Gram-Schmidt ortogonalleştirme sürecine kadar olan tüm notlarını kapsar.</p>
+
+    <h2>I. Matrisler ve Temel İşlemler</h2>
+    <p>Matrisler, lineer denklem sistemlerinin çözümünde ve dönüşümlerde temel araçtır.</p>
+    <ul>
+        <li><strong>Boyut:</strong> $m$ satır ve $n$ sütundan oluşan matris $m \times n$ boyutundadır1.</li>
+    </ul>
+    
+    <p><strong>Matris Çeşitleri:</strong></p>
+    <ul>
+        <li><strong>Kare Matris:</strong> Satır ve sütun sayısı eşittir ($m=n$)2.</li>
+        <li><strong>Köşegen Matris:</strong> Esas köşegen dışındaki tüm elemanları 0 olan matris3.</li>
+        <li><strong>Birim Matris ($I$):</strong> Köşegen elemanları 1, diğerleri 0 olan matris4.</li>
+        <li><strong>Simetrik Matris:</strong> $A^T = A$ olan matris5.</li>
+        <li><strong>Üçgen Matrisler:</strong> Alt üçgen (köşegen üstü 0) ve Üst üçgen (köşegen altı 0)6666.</li>
+    </ul>
+
+    <p><strong>İşlemler:</strong></p>
+    <ul>
+        <li><strong>Toplama/Çıkarma:</strong> Aynı boyutlu matrislerde yapılır7.</li>
+        <li><strong>Çarpma:</strong> $A_{m \times n} \cdot B_{n \times p} = C_{m \times p}$. Sütun sayısı ile satır sayısı eşit olmalı8.</li>
+        <li class="note"><strong>Önemli:</strong> Matris çarpımında değişme özelliği yoktur! Genellikle $A \cdot B \neq B \cdot A$9999.</li>
+        <li><strong>Transpoz (Devrik):</strong> Satırların sütun yapılmasıdır ($A^T$). <br> $(A \cdot B)^T = B^T \cdot A^T$ (Sıra değişir!)10.</li>
+    </ul>
+
+    <h2>II. Determinant</h2>
+    <p>Sadece kare matrisler için hesaplanır. Matrisin tersinin olup olmadığını ve denklem sistemlerinin çözüm durumunu belirler.</p>
+    
+    <p><strong>Hesaplama Yöntemleri:</strong></p>
+    <ul>
+        <li><strong>$2 \times 2$:</strong> $ad - bc$11.</li>
+        <li><strong>Sarrus Kuralı ($3 \times 3$):</strong> İlk iki satır veya sütun eklenerek çapraz çarpımların farkı alınır12121212.</li>
+        <li><strong>Kofaktör (Laplace) Açılımı:</strong> Herhangi bir satır veya sütuna göre açılım yapılabilir. İşaret matrisine ($(-1)^{i+j}$) dikkat edilmeli13.</li>
+    </ul>
+
+    <p><strong>Önemli Özellikler:</strong></p>
+    <ul>
+        <li>Bir satır veya sütun tamamen sıfırsa, determinant 0'dır14.</li>
+        <li>İki satır/sütun yer değiştirirse işaret değişir15.</li>
+        <li>$\det(A \cdot B) = \det(A) \cdot \det(B)$16.</li>
+        <li>$\det(A^{-1}) = \frac{1}{\det(A)}$17.</li>
+        <li>$\det(kA) = k^n \det(A)$ ($n$: matris boyutu)18.</li>
+        <li>Üçgen matrislerin determinantı, köşegen elemanların çarpımıdır19.</li>
+    </ul>
+
+    <h2>III. Lineer Denklem Sistemleri</h2>
+    <p>$Ax = b$ formundaki sistemlerin çözümü.</p>
+    <ul>
+        <li><strong>Eşelon Form:</strong> Pivot elemanlar (ilk sıfır olmayan eleman) 1 olmalı ve merdiven yapısında ilerlemeli20.</li>
+    </ul>
+
+    <p><strong>Çözüm Yöntemleri:</strong></p>
+    <ul>
+        <li><strong>Gauss Yok Etme:</strong> Matrisi eşelon forma getirip geriye doğru yerine koyma21212121.</li>
+        <li><strong>Gauss-Jordan:</strong> Matrisi satırca indirgenmiş eşelon forma (birim matrise yakın) getirme22.</li>
+        <li><strong>Cramer Yöntemi:</strong> $x_i = \frac{\det(\Delta x_i)}{\det(A)}$ formülü ile bulunur. $\det(A) \neq 0$ olmalı23.</li>
+        <li><strong>Ters Matris Yöntemi:</strong> $X = A^{-1} \cdot b$24.</li>
+    </ul>
+
+    <p><strong>Çözüm Durumları (Parametreli Sorular):</strong></p>
+    <ul>
+        <li><strong>Tek Çözüm:</strong> $\det(A) \neq 0$ veya pivot sayısı bilinmeyen sayısına eşit25.</li>
+        <li><strong>Sonsuz Çözüm:</strong> $0=0$ gibi bir satır oluşur (serbest değişken var)26.</li>
+        <li><strong>Çözüm Yok:</strong> $0 = \text{sayı}$ ($0=4$ gibi) tutarsızlık oluşur27.</li>
+    </ul>
+
+    <p><strong>Ters Matris Bulma ($A^{-1}$):</strong></p>
+    <ul>
+        <li><strong>Yöntem 1:</strong> $[A | I] \rightarrow [I | A^{-1}]$ Gauss-Jordan ile28.</li>
+        <li><strong>Yöntem 2:</strong> $A^{-1} = \frac{\text{Ek}(A)}{\det(A)}$ (Ek Matris / Adjoint yöntemi)29.</li>
+    </ul>
+
+    <h2>IV. Vektör Uzayları ($R^n$)</h2>
+    <p>Vektörlerin oluşturduğu, belirli kuralları sağlayan kümeler.</p>
+    <ul>
+        <li><strong>Vektör Uzayı Aksiyomları:</strong> Toplama ve skaler çarpma altında kapalılık dahil 10 şartı sağlamalıdır30303030.</li>
+    </ul>
+
+    <p><strong>Alt Uzay (Subspace):</strong> Bir $W$ kümesinin alt uzay olması için 2 temel şart yeterlidir:</p>
+    <ul>
+        <li>Toplamaya göre kapalılık: $w_1 + w_2 \in W$31.</li>
+        <li>Skaler çarpmaya göre kapalılık: $\alpha \cdot w_1 \in W$32.</li>
+        <li class="note"><strong>İpucu:</strong> Orijinden geçmeyen doğrular/düzlemler ($x+y=2$ gibi) alt uzay değildir33333333.</li>
+    </ul>
+
+    <p><strong>Lineer Bağımsızlık:</strong> $c_1 v_1 + \dots + c_n v_n = 0$ iken tek çözüm $c_1=c_2=\dots=0$ ise bağımsızdır34.</p>
+    <ul>
+        <li><strong>Determinant yöntemiyle:</strong> Kare matris oluşturulabiliyorsa ve $\det \neq 0$ ise lineer bağımsızdır35.</li>
+    </ul>
+
+    <p><strong>Germe (Span):</strong> Vektörlerin lineer kombinasyonlarıyla tüm uzayı oluşturabilmesi36.</p>
+    <p><strong>Taban (Baz):</strong> Bir küme hem lineer bağımsız hem de uzayı geriyorsa tabandır37.<br>$R^n$ için tabandaki eleman sayısı $n$ olmalıdır.</p>
+
+    <h2>V. Koordinatlama ve Baz Değişimi</h2>
+    <p>Bir vektörün farklı bazlara göre ifadesi.</p>
+    <ul>
+        <li><strong>Koordinat Vektörü:</strong> Bir $v$ vektörünün, $S$ bazındaki elemanların katsayıları cinsinden yazılmasıdır: $[v]_S = (c_1, c_2, \dots)$38.</li>
+    </ul>
+    
+    <p><strong>Baz Değişimi (Geçiş Matrisi):</strong> Bir bazdan ($B$) diğer baza ($B'$) geçiş için $P$ matrisi kullanılır.</p>
+    <ul>
+        <li>$[v]_B = P \cdot [v]_{B'}$39.</li>
+        <li>Geçiş matrisi $P$'nin sütunları, yeni baz vektörlerinin eski baza göre koordinatlarıdır40.</li>
+    </ul>
+
+    <h2>VI. Doğrusal Dönüşümler</h2>
+    <p>Vektör uzayları arasında yapıyı koruyan fonksiyonlar ($T: V \rightarrow W$).</p>
+    <p><strong>Şartlar:</strong></p>
+    <ul>
+        <li>$T(u+v) = T(u) + T(v)$ (Toplamsallık)41.</li>
+        <li>$T(c \cdot u) = c \cdot T(u)$ (Homojenlik)42.</li>
+    </ul>
+
+    <p><strong>Matris Gösterimi:</strong> Her lineer dönüşüm bir $A$ matrisi ile $T(x) = A \cdot x$ şeklinde ifade edilebilir43.</p>
+    <p><strong>Çekirdek (Kernel):</strong> Dönüşüm sonucunda 0 vektörüne giden elemanlar kümesi. $\text{Kernel}(T) = \{u \mid T(u) = 0\}$44. Çekirdek sadece $\{0\}$ ise dönüşüm birebirdir.</p>
+
+    <h2>VII. İç Çarpım ve Ortogonallik</h2>
+    <p>Vektörlerin uzunluğu ve açısı.</p>
+    <ul>
+        <li><strong>İç Çarpım (Dot Product):</strong> $\langle u, v \rangle = x_1 x_2 + y_1 y_2 + \dots$45.</li>
+        <li><strong>Ortogonallik (Diklik):</strong> İki vektörün iç çarpımı 0 ise bu vektörler diktir ($\perp$)46.</li>
+        <li><strong>Norm (Uzunluk):</strong> $\|v\| = \sqrt{\langle v, v \rangle}$47.</li>
+        <li><strong>Ortogonal Baz:</strong> Bazdaki tüm vektörler birbirine diktir48.</li>
+        <li><strong>Ortonormal Baz:</strong> Vektörler hem birbirine dik hem de uzunlukları 1 birimdir49.</li>
+    </ul>
+
+    <p><strong>Gram-Schmidt Metodu:</strong> Herhangi bir bazı ortogonal (veya ortonormal) baza çevirme yöntemidir50.</p>
+    <ul>
+        <li>$u_1 = v_1$</li>
+        <li>$u_2 = v_2 - \frac{\langle v_2, u_1 \rangle}{\langle u_1, u_1 \rangle} u_1$51.</li>
+        <li>$u_3 = v_3 - \frac{\langle v_3, u_1 \rangle}{\langle u_1, u_1 \rangle} u_1 - \frac{\langle v_3, u_2 \rangle}{\langle u_2, u_2 \rangle} u_2$52.</li>
+        <li><strong>Ortonormal yapmak için:</strong> Bulunan $u$ vektörleri kendi boylarına bölünür ($u_i / \|u_i\|$)53.</li>
+    </ul>
+</div>
+
+</body>
+</html>
